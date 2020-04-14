@@ -33,7 +33,7 @@ echo "[ The following received mail from ${sender} ]"
 echo ""
 grep "to=<" ${out_file} | cut -d" " -f 1,3,4,8 | sed 's/to=<//;s/>,//'
 echo ""
-echo "--> '/usr/share/scripts/email.txt' created with list of recipient addresses. Use this file for running shellphish.ps1"
+echo "--> '/usr/share/scripts/email.txt' created with list of recipient addresses."
 
 # send the receipient addresses to a file
 grep "to=<" ${out_file} | cut -d" " -f 8 | sed 's/to=<//;s/>,//' > ${recip}
