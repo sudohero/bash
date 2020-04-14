@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# Heath Stewart - 25 March 2020
+# This script will parse an exchange log file for IP addresses that
+# connect to the server given a path to the file and a username as the
+# search string.
+#
+# First thing to do is grab a copy of the log file from the exchange server
+#
+# The default option is with 2 args, and only returns the username and IP address.
+# If you want to get more information ([t]ime, [a]pplication or both with [v]erbose)
+# you will need to pass the t, a or v arguments.
+
+# need at least 2 arguments to parse the log file: username (search_string) & file path
+[ $# -lt 2 ] && echo "Usage: xlp <search_string> <file_path> [t] [a] [v] ::: <required> [optional]" && exit 1 
+
+# run the command differently based on the optional 3rd argument
+case "$3" in
+	t) grep $1 $2 | cut -d" " -f 2,8,9 | sort -u ;;    # include timestamp
+	a) grep $1 $2 | cut -d" " -f 8,9,10 | sort -u ;;   # include app (outlook/web)
+	v) grep $1 $2 | cut -d" " -f 2,8,9,10 | sort -u ;; # include t & a
+	*) grep $1 $2 | cut -d" " -f 8,9 | sort -u ;;      # default is just IP and string
+esac
+

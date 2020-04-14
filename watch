@@ -1,0 +1,54 @@
+#!/bin/sh
+# Heath Stewart 06 April 2020
+
+# This script will perform a running tail of the maillog and watch for the
+# given criteria, preferably an email address, or the domain of the sender.
+# Once the latest log entry contains that data, the log entry will be emailed
+# to the specified address to notify the watcher.
+
+# This is best run in the background with nohup. That way you don't have to sit
+# waiting for an email to come in. Once the entry is found, it will automatically
+# break out of the while loop and end the program.
+
+# To run in the background: nohup watch @example.com me@myemail.com &>/dev/null &
+
+# help options here
+[ $# -lt 1 ] && echo "Usage: 'watch <search_string> [receiver]' || where <required> [optional]"  && exit 1
+
+if [ $1 = "help" ]
+then
+	echo "Usage: watch <search_string> [receiver]"
+	echo "The search_string argument is required, receiver is optional"
+	echo ""
+	echo "	help			-this help menu"
+	echo "	<search_string>		-a query for a domain or mail account"
+	echo "				 for example: watch user@example.com"
+	echo "				 or watch @domain.com"
+	echo "	[receiver]		-who you want to receive the output"
+	echo "				 when watch finds the search string"
+	echo "				 for example: "
+	echo "				 watch @domain.com my.email@example.com"
+	exit
+fi
+
+# arg 1 defines the address/domain to watch for
+# arg 2 defines where you want the alert to be emailed, such as yourself
+addr=$1
+recv=$2
+echo "[ watching for ] $1"
+echo "[ sending output to ] $2"
+
+# tail mail log and continue to grep for address, output to /tmp/${addr}.txt
+# once the address in question is seen, send it to specified address
+tail -f /var/log/maillog | \
+
+while read line;
+do
+	echo "$line" | grep --line-buffered ${addr}
+	if [ $? = 0 ] 
+	then
+		echo "$line" >> /tmp/${addr}.txt
+		mail -s "Watch found ${addr}" $recv < /tmp/${addr}.txt
+		break
+	fi
+done
