@@ -19,8 +19,8 @@
 
 # store arg 1 as a var, and define other vars for later use
 from=$1
-out_file="/root/scripts/log.txt"
-recip="/root/scripts/email.txt"
+out_file="/usr/share/scripts/log.txt"
+recip="/usr/share/scripts/email.txt"
 log="/var/log/maillog"
 
 # grep the maillog for arg 1, then output that to the defined out_file
